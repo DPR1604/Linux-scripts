@@ -47,26 +47,25 @@ fi
 # Checks against the blacklists for the ip
 while IFS= read -r line; do
 	
-	ToCheck=$Rip.$line
+	ToCheck=$Rip.$line 						#Puts together the ip address and blacklist together to generate the dns Record to be checked
 
-	Output=$(host $ToCheck)
+	Output=$(host $ToCheck) 					#Runs host against the generated record
 
-	#echo $Output
-	Checked=$(($Checked +1))
+	Checked=$(($Checked +1)) 					#Add's 1 to the number of checked RBL's
 
-	if echo $Output| grep -q "$ToCheck not found" ; then
+	if echo $Output| grep -q "$ToCheck not found" ; then 		#Checks for not found in the Output.
 	
-		echo -e ${Green}IP is not listed in $line${NC}
-		NotListed=$(($NotListed + 1))
+		echo -e ${Green}IP is not listed in $line${NC} 		#Output to terminal that the ip is not listed in the RBL
+		NotListed=$(($NotListed + 1)) 				#Adds 1 to the number of not listed
 
-	elif echo $Output | grep -q "$ToCheck has address" ; then
+	elif echo $Output | grep -q "$ToCheck has address" ; then 	#Checks for "has address"
 
-		echo -e ${Red}IP is listed in $line${NC}
-		Listed=$(($Listed + 1))
+		echo -e ${Red}IP is listed in $line${NC} 		#Outputs to terminal that the ip is listed.
+		Listed=$(($Listed + 1)) 				#Adds 1 to the number of listed
 
-	else	
+	else								#if other two statements dont match then 
 
-		echo -e ${Blue}Unknown result for $line${NC}
+		echo -e ${Blue}Unknown result for $line${NC} 		#outputs to terminal that the result is unknown
 		Unknown=$(($Unknown + 1))
 
 	fi
@@ -74,7 +73,7 @@ while IFS= read -r line; do
 
 done < "$BLlist"
 
-echo -e "${White}Checked:${NC} $Checked ${Green}Not Listed:${NC} $NotListed ${Red}Listed:${NC} $Listed ${Blue}Unknown:${NC} $Unknown"
+echo -e "${White}Checked:${NC} $Checked ${Green}Not Listed:${NC} $NotListed ${Red}Listed:${NC} $Listed ${Blue}Unknown:${NC} $Unknown" 		#Outputs to the terminal the total RBLS checked the total unlisted, listed and unknown
 exit 0
 
 }
@@ -91,28 +90,28 @@ reverseip () {
 
 domaintomx () {
 	
-	domainconfirm #calls the domain confirm function
+	domainconfirm 										#calls the domain confirm function
 
-	mxa=$(host $domain |grep mail | awk '{ print $7 }' ) #grabs the A name record used for MX
+	mxa=$(host $domain |grep mail | awk '{ print $7 }' ) 					#grabs the A name record used for MX
 
-	if [ "$mxa" == "" ]; then
+	if [ "$mxa" == "" ]; then								#Checks if the A record from the MX record is blank
 
-		echo -e "${Red}Domain does not have an MX record${NC}"
+		echo -e "${Red}Domain does not have an MX record${NC}"				#Outputs to the terminal that the domain has an empty mx record
 		exit 1
 	fi
 
-	echo "$domain uses $mxa for handling mail" #echos result
+	echo "$domain uses $mxa for handling mail" 						#Outputs to terminal the mx record the domain uses for mail
 	sleep 1
 
-	ip=$(host $mxa | awk '{ print $4 }' ) #Grabs the ip address the from the mx a record
+	ip=$(host $mxa | awk '{ print $4 }' ) 							#Grabs the ip address the from the mx a record
 
-	if [ "$ip" == "" ]; then
+	if [ "$ip" == "" ]; then								#Checks if the mxa has an IP
 
-		echo -e "The A record used for the MX record does not resolve to an IP"
+		echo -e "The A record used for the MX record does not resolve to an IP"		#Outputs to terminal that the ip is blank
 		exit 1
 	fi
 
-	echo "$mxa resolves to $ip" #prints result
+	echo "$mxa resolves to $ip" 								#Outputs the ip the mxa resolves to
 	sleep 1 
 
 }
@@ -121,14 +120,14 @@ domainconfirm () {
 
 	#checks if the domain is a valid FQDN
 		
-	checkforhostcmd
+	checkforhostcmd										#Calls the checkforhostcmd function
 
-	host $domain 2>&1 > /dev/null
-	if [ $? -eq 0 ]
+	host $domain 2>&1 > /dev/null								#runs a host command with outout to dev/null
+	if [ $? -eq 0 ]										#checks if if the output is 0
 	then
-		echo -e "${Green}Valid domain continuing${NC}"
+		echo -e "${Green}Valid domain continuing${NC}"					#outputs to terminal that domain is valid/registered
 	else
-		echo -e "${Red}Invalid domain name${NC}"
+		echo -e "${Red}Invalid domain name${NC}"					#outputs to terminal that domain is not valid
 		echo -e "${Blue}This usually means the domain is not registered or is spelled incorrectly, you can check if the domain is registered here:${NC} https://whois.com/whois/$domain" 
 
 		exit 1
@@ -137,9 +136,9 @@ domainconfirm () {
 
 checkfordigcmd () {
 
-        if ! command -v dig &> /dev/null ; then
+        if ! command -v dig &> /dev/null ; then								#checks if dig is not installed
 
-                echo -e "${Red}dig is not installed please install dig to run a spf check.${NC}"
+                echo -e "${Red}dig is not installed please install dig to run a spf check.${NC}"	#Outputs to terminal that dig is not installed
                 exit 1
 
         fi
@@ -148,9 +147,9 @@ checkfordigcmd () {
 
 checkforhostcmd () {
 
-        if ! command -v host &> /dev/null ; then
+        if ! command -v host &> /dev/null ; then							#checks if host is not installed
 
-                echo -e "${Red}host is not installed please install dig to run a spf check.${NC}"
+                echo -e "${Red}host is not installed please install host to run a spf check.${NC}"	#Outputs to terminal that host is not installed
 		exit 1
 
         fi
@@ -159,6 +158,8 @@ checkforhostcmd () {
 }
 
 usage () {
+
+#outputs how to use the scripts
 
 cat << EOF
 	Example use
@@ -170,6 +171,7 @@ cat << EOF
 	-d Declares a domain to be checked
 	-h Displays this message
 	-i Declares a IP to be checked
+	-s Start an spf check
 EOF
 
 
@@ -177,19 +179,14 @@ EOF
 
 spfcheck () {
 
-	if ! command -v dig &> /dev/null ; then
-
-		echo "${Red}dig is not installed please install dig to run a spf check.${NC}"
-		return [n]
-
-	fi
+	checkfordigcmd
 
 	spf=$(dig txt $domain |grep spf | awk '{$1=$2=$3=$4="";print $0}' | sed -e 's/^[[:space:]]*//') #Grabs the domains spf record.
 	echo -e "${Blue}Current SPF record is:${NC}$spf"
 
 	if  echo $spf | grep -q $mxa ; then
 
-		echo -e "${Green}SPF record includes $domain ${NC}"
+		echo -e "${Green}SPF record includes $mxa ${NC}"
 
 	elif echo $spf | grep -q $ip ; then
 
@@ -202,19 +199,21 @@ spfcheck () {
 
 }
 
+
+
 #Variables Start
-ip="" #clears the ip variable
-BLlist="./BLlist.txt" #declares the list of blacklists
-Checked=0 #resets variable counter to 0
-Listed=0 #resets variable counter to 0
-NotListed=0 #resets variable counter to 0
-Unknown=0 #resets variable counter to 0
-Green='\033[1;32m' #defines green colour
-White='\033[1;37m'
-Red='\033[0;31m'
-Blue='\033[1;34m'
-NC='\033[0m' #resets the text colour
-BLlistlink=https://raw.githubusercontent.com/DPR1604/Linux-scripts/master/email-checker/BLlist.txt #Defines a download link for the list of blacklists.
+ip="" 													#clears the ip variable
+BLlist="./BLlist.txt" 											#declares the list of blacklists
+Checked=0 												#resets variable counter to 0
+Listed=0 												#resets variable counter to 0
+NotListed=0 												#resets variable counter to 0
+Unknown=0 												#resets variable counter to 0
+Green='\033[1;32m' 											#defines green colour
+White='\033[1;37m'											#defines white colour
+Red='\033[0;31m'											#defines the red colour
+Blue='\033[1;34m'											#defines the blue colour
+NC='\033[0m' 												#resets the text colour
+BLlistlink=https://raw.githubusercontent.com/DPR1604/Linux-scripts/master/email-checker/BLlist.txt 	#Defines a download link for the list of blacklists.
 
 
 #Variables Emd
