@@ -78,13 +78,26 @@ exit 0
 
 }
 
-reverseip () {
-    
-	#Reverses the ip so it can looked up correctly
-    	local IFS
-    	IFS=.
-    	set -- $1
-	echo $4.$3.$2.$1
+checkfordigcmd () {
+
+        if ! command -v dig &> /dev/null ; then								#checks if dig is not installed
+
+                echo -e "${Red}dig is not installed please install dig to run a spf check.${NC}"	#Outputs to terminal that dig is not installed
+                exit 1
+
+        fi
+	
+}
+
+checkforhostcmd () {
+
+        if ! command -v host &> /dev/null ; then							#checks if host is not installed
+
+                echo -e "${Red}host is not installed please install host to run a spf check.${NC}"	#Outputs to terminal that host is not installed
+		exit 1
+
+        fi
+
 
 }
 
@@ -134,46 +147,13 @@ domainconfirm () {
 	fi
 }
 
-checkfordigcmd () {
-
-        if ! command -v dig &> /dev/null ; then								#checks if dig is not installed
-
-                echo -e "${Red}dig is not installed please install dig to run a spf check.${NC}"	#Outputs to terminal that dig is not installed
-                exit 1
-
-        fi
-	
-}
-
-checkforhostcmd () {
-
-        if ! command -v host &> /dev/null ; then							#checks if host is not installed
-
-                echo -e "${Red}host is not installed please install host to run a spf check.${NC}"	#Outputs to terminal that host is not installed
-		exit 1
-
-        fi
-
-
-}
-
-usage () {
-
-#outputs how to use the scripts
-
-cat << EOF
-	Example use
-	
-	email-checker.sh -d example.com -b
-	email-checker.sh -i 1.1.1.1 -b
-
-	-b Starts a blacklist check
-	-d Declares a domain to be checked
-	-h Displays this message
-	-i Declares a IP to be checked
-	-s Start an spf check
-EOF
-
+reverseip () {
+    
+	#Reverses the ip so it can looked up correctly
+    	local IFS
+    	IFS=.
+    	set -- $1
+	echo $4.$3.$2.$1
 
 }
 
@@ -199,7 +179,25 @@ spfcheck () {
 
 }
 
+usage () {
 
+#outputs how to use the scripts
+
+cat << EOF
+	Example use
+	
+	email-checker.sh -d example.com -b
+	email-checker.sh -i 1.1.1.1 -b
+
+	-b Starts a blacklist check
+	-d Declares a domain to be checked
+	-h Displays this message
+	-i Declares a IP to be checked
+	-s Start an spf check
+EOF
+
+
+}
 
 #Variables Start
 ip="" 													#clears the ip variable
