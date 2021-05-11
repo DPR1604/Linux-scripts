@@ -185,10 +185,10 @@ spfcheck () {
 summary () {
 
 	printf "+------------------------------------------+--------------------+\n"
-	printf "| %40s | %18d |\n", "Checked", $Checked
-	printf "| %40s | %18d |\n", "Not listed", $NotListed
-	printf "| %40s | %18d |\n", "Listed", $Listed
-	printf "| %40s | %18d |\n", "Unknown", $Unknown
+	printf "| %40s | %18d |\n" "Checked" $Checked
+	printf "| %40s | %18d |\n" "Not listed" $NotListed
+	printf "| %40s | %18d |\n" "Listed" $Listed
+	printf "| %40s | %18d |\n" "Unknown" $Unknown
 	printf "+------------------------------------------+--------------------+\n" 
 }
 
