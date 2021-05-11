@@ -179,6 +179,12 @@ spfcheck () {
 
 }
 
+summary () {
+
+
+
+}
+
 usage () {
 
 #outputs how to use the scripts
