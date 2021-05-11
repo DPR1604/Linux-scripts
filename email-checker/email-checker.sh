@@ -185,11 +185,15 @@ spfcheck () {
 summary () {
 
 	printf "+------------------------------------------+--------------------+\n"
-	printf ("$White")
+	printf "${White}"
 	printf "| %40s | %18d |\n" "Checked" $Checked
+	printf "${Green}"
 	printf "| %40s | %18d |\n" "Not listed" $NotListed
+	printf "${Red}"
 	printf "| %40s | %18d |\n" "Listed" $Listed
+	printf "${Blue}"
 	printf "| %40s | %18d |\n" "Unknown" $Unknown
+	printf "${NC}"
 	printf "+------------------------------------------+--------------------+\n" 
 }
 
