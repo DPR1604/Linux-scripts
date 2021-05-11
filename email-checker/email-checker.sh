@@ -74,6 +74,9 @@ while IFS= read -r line; do
 done < "$BLlist"
 
 echo -e "${White}Checked:${NC} $Checked ${Green}Not Listed:${NC} $NotListed ${Red}Listed:${NC} $Listed ${Blue}Unknown:${NC} $Unknown" 		#Outputs to the terminal the total RBLS checked the total unlisted, listed and unknown
+
+summary
+
 exit 0
 
 }
@@ -181,8 +184,12 @@ spfcheck () {
 
 summary () {
 
-
-
+	printf "+------------------------------------------+--------------------+\n"
+	printf "| %40s | %18d |\n", "Checked" $Checked
+	printf "| %40s | %18d |\n", "Not listed" $NotListed
+	printf "| %40s | %18d |\n", "Listed" $Listed
+	printf "| %40s | %18d |\n", "Unknown" $Unknown
+	printf "+------------------------------------------+--------------------+\n" 
 }
 
 usage () {
