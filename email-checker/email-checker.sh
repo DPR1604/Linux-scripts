@@ -3,6 +3,7 @@
 #Author: Gareth Jones
 #Github: https://github.com/DPR1604/Linux-scripts
 #License: MIT
+#version: 0.9.7
 
 #Functions Start
 
@@ -75,9 +76,11 @@ done < "$BLlist"
 
 echo -e "${White}Checked:${NC} $Checked ${Green}Not Listed:${NC} $NotListed ${Red}Listed:${NC} $Listed ${Blue}Unknown:${NC} $Unknown" 		#Outputs to the terminal the total RBLS checked the total unlisted, listed and unknown
 
-summary
+if [ "$all" == "0" ]; then
 
 exit 0
+
+fi
 
 }
 
@@ -184,17 +187,28 @@ spfcheck () {
 
 summary () {
 
-	printf "+------------------------------------------+--------------------+\n"
+	printf "+--------------------DNS-------------------+--------------------------------------------------------------+\n"
+	printf "| %40s | %60s |\n"
+	printf "| %40s | %60s |\n" "Domains current MX record points to" $mxa 
+       	printf "| %40s | %60s |\n" "$mxa resolves to IP" $ip 
+	printf "| %40s | %60s |\n"
+	printf "+--------------------SPF-------------------+--------------------------------------------------------------+\n"
+	printf "| %40s | %60s |\n"
+	printf "| %40s | %60s |\n" "Current spf record" "$spf"
+	printf "| %40s | %60s |\n" "Recommended SPF record" "v=spf1 a:$mxa ip4:$ip ~all"
+	printf "+----------------BL checks-----------------+--------------------------------------------------------------+\n"
+	printf "| %40s | %60s |\n"
 	printf "${White}"
-	printf "| %40s | %18d |\n" "Checked" $Checked
+	printf "| %40s | %60d |\n" "Checked" $Checked
 	printf "${Green}"
-	printf "| %40s | %18d |\n" "Not listed" $NotListed
+	printf "| %40s | %60d |\n" "Not listed" $NotListed
 	printf "${Red}"
-	printf "| %40s | %18d |\n" "Listed" $Listed
+	printf "| %40s | %60d |\n" "Listed" $Listed
 	printf "${Blue}"
-	printf "| %40s | %18d |\n" "Unknown" $Unknown
+	printf "| %40s | %60d |\n" "Unknown" $Unknown
 	printf "${NC}"
-	printf "+------------------------------------------+--------------------+\n" 
+	printf "| %40s | %60s |\n"
+	printf "+------------------------------------------+--------------------------------------------------------------+\n" 
 }
 
 usage () {
@@ -230,13 +244,20 @@ Red='\033[0;31m'											#defines the red colour
 Blue='\033[1;34m'											#defines the blue colour
 NC='\033[0m' 												#resets the text colour
 BLlistlink=https://raw.githubusercontent.com/DPR1604/Linux-scripts/master/email-checker/BLlist.txt 	#Defines a download link for the list of blacklists.
+all=0
 
 
 #Variables Emd
 
-while getopts bhsd:i: opt
+while getopts abhsd:i: opt
 do
 	case ${opt} in
+		a )	all=1
+			Blacklist-check
+			spfcheck
+			summary
+			;;
+
 		b ) 	Blacklist-check
 			;;
 
