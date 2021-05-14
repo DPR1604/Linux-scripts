@@ -9,7 +9,6 @@
 
 Blacklist-check() {
 
-
 #checks if ip is valid only really checks if the string matches is there are 4 section something like 1111.1111.1111.111 would still be valid this is something to improve in the future but for now this adds a resonable amount of error checking
 
 echo -e "${Blue}Checking if IP is valid${NC}"
@@ -75,12 +74,6 @@ while IFS= read -r line; do
 done < "$BLlist"
 
 echo -e "${White}Checked:${NC} $Checked ${Green}Not Listed:${NC} $NotListed ${Red}Listed:${NC} $Listed ${Blue}Unknown:${NC} $Unknown" 		#Outputs to the terminal the total RBLS checked the total unlisted, listed and unknown
-
-if [ "$all" == "0" ]; then
-
-exit 0
-
-fi
 
 }
 
@@ -151,6 +144,39 @@ domainconfirm () {
 
 		exit 1
 	fi
+
+}
+
+Portcheck () {
+
+	for i in 25 587 143 993 110 995 
+	do
+
+		nc -vz -w10 mail.valhallaonline.info $i |& grep -q Connected
+		if [ $? -eq 0 ]; then
+
+			echo -e "${Green}$i is open ${NC}"
+			eval stat$i="Open"
+
+		elif [ $? -eq 1 ]; then
+			
+			echo -e "${Red}$i is closed ${NC}"
+			eval stat$i="closed"
+
+		else	
+
+			echo -e "${Blue}unknown state when checking port $i please manually check with:${NC} nc -vz -w10 $ip $i"
+
+		fi
+	done
+
+	echo $stat25
+	echo $stat587
+	echo $stat143
+	echo $stat993
+	echo $stat110
+	echo $stat995
+
 }
 
 reverseip () {
@@ -196,10 +222,10 @@ summary () {
 	printf "| %40s | %60s |\n"
 	printf "| %40s | %60s |\n" "Current spf record" "$spf"
 	printf "| %40s | %60s |\n" "Recommended SPF record" "v=spf1 a:$mxa ip4:$ip ~all"
+	printf "| %40s | %60s |\n"
 	printf "+----------------BL checks-----------------+--------------------------------------------------------------+\n"
 	printf "| %40s | %60s |\n"
-	printf "${White}"
-	printf "| %40s | %60d |\n" "Checked" $Checked
+	printf "| ${White}%40s${NC} | %60d |\n" "Checked" $Checked
 	printf "${Green}"
 	printf "| %40s | %60d |\n" "Not listed" $NotListed
 	printf "${Red}"
@@ -208,7 +234,11 @@ summary () {
 	printf "| %40s | %60d |\n" "Unknown" $Unknown
 	printf "${NC}"
 	printf "| %40s | %60s |\n"
+	printf "+-------------------Ports------------------+--------------------------------------------------------------+\n"
+	printf "| %40s | %60s |\n"
+	printf "| %40s | %60s |\n" "SMTP (25)"   
 	printf "+------------------------------------------+--------------------------------------------------------------+\n" 
+
 }
 
 usage () {
@@ -244,16 +274,13 @@ Red='\033[0;31m'											#defines the red colour
 Blue='\033[1;34m'											#defines the blue colour
 NC='\033[0m' 												#resets the text colour
 BLlistlink=https://raw.githubusercontent.com/DPR1604/Linux-scripts/master/email-checker/BLlist.txt 	#Defines a download link for the list of blacklists.
-all=0
-
 
 #Variables Emd
 
-while getopts abhsd:i: opt
+while getopts abhspd:i: opt
 do
 	case ${opt} in
-		a )	all=1
-			Blacklist-check
+		a )	Blacklist-check
 			spfcheck
 			summary
 			;;
@@ -264,11 +291,15 @@ do
 		d )	domain=$OPTARG
 			domaintomx
 			;;
+
+		h )     usage
+                        ;;
+		
 		i ) 
 			ip=$OPTARG
 			;;
 
-		h )	usage
+		p )	Portcheck
 			;;
 
 		s )	spfcheck
