@@ -147,6 +147,12 @@ domainconfirm () {
 
 }
 
+fcrdnscheck () {
+
+echo "not yet added"
+
+}
+
 Portcheck () {
 
 	for i in 25 587 143 993 110 995 
@@ -169,13 +175,6 @@ Portcheck () {
 
 		fi
 	done
-
-	echo $stat25
-	echo $stat587
-	echo $stat143
-	echo $stat993
-	echo $stat110
-	echo $stat995
 
 }
 
@@ -239,6 +238,7 @@ summary () {
 	printf "| %40s | %60s |\n" "POP3 (110)" $stat110
 	printf "| %40s | %60s |\n" "POP3S (995)" $stat995
 	printf "| %40s | %60s |\n"
+	printf "+------------------FCrDNS-------------------+--------------------------------------------------------------+\n"
 	printf "+-------------------------------------------+--------------------------------------------------------------+\n" 
 
 }
