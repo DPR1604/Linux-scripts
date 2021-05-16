@@ -213,31 +213,33 @@ spfcheck () {
 
 summary () {
 
-	printf "+--------------------DNS-------------------+--------------------------------------------------------------+\n"
+	printf "+--------------------DNS--------------------+--------------------------------------------------------------+\n"
 	printf "| %40s | %60s |\n"
 	printf "| %40s | %60s |\n" "Domains current MX record points to" $mxa 
        	printf "| %40s | %60s |\n" "$mxa resolves to IP" $ip 
 	printf "| %40s | %60s |\n"
-	printf "+--------------------SPF-------------------+--------------------------------------------------------------+\n"
+	printf "+--------------------SPF--------------------+--------------------------------------------------------------+\n"
 	printf "| %40s | %60s |\n"
 	printf "| %40s | %60s |\n" "Current spf record" "$spf"
 	printf "| %40s | %60s |\n" "Recommended SPF record" "v=spf1 a:$mxa ip4:$ip ~all"
 	printf "| %40s | %60s |\n"
-	printf "+----------------BL checks-----------------+--------------------------------------------------------------+\n"
+	printf "+-----------------BL checks-----------------+--------------------------------------------------------------+\n"
 	printf "| %40s | %60s |\n"
-	printf "| ${White}%40s${NC} | %60d |\n" "Checked" $Checked
-	printf "${Green}"
-	printf "| %40s | %60d |\n" "Not listed" $NotListed
-	printf "${Red}"
-	printf "| %40s | %60d |\n" "Listed" $Listed
-	printf "${Blue}"
-	printf "| %40s | %60d |\n" "Unknown" $Unknown
-	printf "${NC}"
+	printf "| ${White}%40s${NC} | ${White}%60d${NC} |\n" "Checked" $Checked
+	printf "| ${Green}%40s${NC} | ${Green}%60d${NC} |\n" "Not listed" $NotListed
+	printf "| ${Red}%40s${NC} | ${Red}%60d${NC} |\n" "Listed" $Listed
+	printf "| ${Blue}%40s${NC} | ${Blue}%60d${NC} |\n" "Unknown" $Unknown
 	printf "| %40s | %60s |\n"
-	printf "+-------------------Ports------------------+--------------------------------------------------------------+\n"
+	printf "+-------------------Ports-------------------+--------------------------------------------------------------+\n"
 	printf "| %40s | %60s |\n"
-	printf "| %40s | %60s |\n" "SMTP (25)"   
-	printf "+------------------------------------------+--------------------------------------------------------------+\n" 
+	printf "| %40s | %60s |\n" "SMTP (25)"  $stat25
+       	printf "| %40s | %60s |\n" "SMTPS (587)" $stat587
+	printf "| %40s | %60s |\n" "IMAP (143)" $stat143
+	printf "| %40s | %60s |\n" "IMAPS (993)" $stat993
+	printf "| %40s | %60s |\n" "POP3 (110)" $stat110
+	printf "| %40s | %60s |\n" "POP3S (995)" $stat995
+	printf "| %40s | %60s |\n"
+	printf "+-------------------------------------------+--------------------------------------------------------------+\n" 
 
 }
 
@@ -282,6 +284,7 @@ do
 	case ${opt} in
 		a )	Blacklist-check
 			spfcheck
+			Portcheck
 			summary
 			;;
 
