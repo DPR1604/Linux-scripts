@@ -11,44 +11,29 @@ Blacklist-check() {
 
 #checks if ip is valid only really checks if the string matches is there are 4 section something like 1111.1111.1111.111 would still be valid this is something to improve in the future but for now this adds a resonable amount of error checking
 
-echo -e "${Blue}Checking if IP is valid${NC}"
+	echo -e "${Blue}Locating list of blacklist's${NC}" 
 
-if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+	#Checks to see if the list of BL providors and if it doesn't exsist it will retreive it from github
+
+	if [ ! -f ./BLlist.txt ]; then 
 	
-	echo -e "${Green}IP is valid continuing${NC}"
+		echo "${Blue}List Not Found Downloading list${NC}"
+		wget -q $BLlistlink 
 
-else   
+		if [ ! -f ./BLlist.txt ]; then
 
-	echo -e "${Red}IP is not valid${NC}"
-	exit 1
+			echo -e "${Red}download failed please ensure wget is installed and access to${NC} $BLlistDL"
+			exit 1
 
-fi
-
-Rip=$(reverseip $ip) #Calls the reverseip function
-
-echo -e "${Blue}Locating list of blacklist's${NC}" 
-
-#Checks to see if the list of BL providors and if it doesn't exsist it will retreive it from github
-
-if [ ! -f ./BLlist.txt ]; then 
-	
-	echo "${Blue}List Not Found Downloading list${NC}"
-	wget -q $BLlistlink 
-
-	if [ ! -f ./BLlist.txt ]; then
-
-		echo -e "${Red}download failed please ensure wget is installed and access to${NC} $BLlistDL"
-		exit 1
+		fi
 
 	fi
-
-fi
 
 # Checks against the blacklists for the ip
 while IFS= read -r line; do
 	
 	ToCheck=$Rip.$line 						#Puts together the ip address and blacklist together to generate the dns Record to be checked
-
+	echo $ToCheck
 	Output=$(host $ToCheck) 					#Runs host against the generated record
 
 	Checked=$(($Checked +1)) 					#Add's 1 to the number of checked RBL's
@@ -149,7 +134,22 @@ domainconfirm () {
 
 fcrdnscheck () {
 
-echo "not yet added"
+	echo -e "${Blue}Checking if IP is valid${NC}"
+
+	if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+
+        	echo -e "${Green}IP is valid continuing${NC}"
+
+	else
+
+        	echo -e "${Red}IP is not valid${NC}"
+        	exit 1
+
+	fi
+	
+	
+
+	dig ptr 76.100.90.157.in-addr.arpa
 
 }
 
@@ -179,7 +179,20 @@ Portcheck () {
 }
 
 reverseip () {
-    
+
+	#echo -e "${Blue}Checking if IP is valid${NC}"
+
+	#if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+
+        #	echo -e "${Green}IP is valid continuing${NC}"
+
+	#else
+
+        #	echo -e "${Red}IP is not valid${NC}"
+	 #       exit 1
+
+	#fi
+	
 	#Reverses the ip so it can looked up correctly
     	local IFS
     	IFS=.
@@ -279,7 +292,7 @@ BLlistlink=https://raw.githubusercontent.com/DPR1604/Linux-scripts/master/email-
 
 #Variables Emd
 
-while getopts abhspd:i: opt
+while getopts abhspfd:i: opt
 do
 	case ${opt} in
 		a )	Blacklist-check
@@ -295,11 +308,14 @@ do
 			domaintomx
 			;;
 
+		f )	fcrdnscheck
+			;;
+
 		h )     usage
                         ;;
 		
-		i ) 
-			ip=$OPTARG
+		i ) 	ip=$OPTARG
+			Rip=$(reverseip $ip)
 			;;
 
 		p )	Portcheck
