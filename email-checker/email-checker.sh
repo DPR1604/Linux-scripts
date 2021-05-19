@@ -16,7 +16,7 @@ Blacklist-check() {							#function checks for the IP against the list of blackl
 
 	if [ ! -f ./BLlist.txt ]; then 
 	
-		echo "${Blue}List Not Found Downloading list${NC}"
+		echo -e "${Blue}List Not Found Downloading list${NC}"
 		wget -q $BLlistlink 
 
 		if [ ! -f ./BLlist.txt ]; then
