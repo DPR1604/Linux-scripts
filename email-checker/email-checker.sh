@@ -9,7 +9,6 @@
 
 Blacklist-check() {							#function checks for the IP against the list of blacklist
 
-#checks if ip is valid only really checks if the string matches is there are 4 section something like 1111.1111.1111.111 would still be valid this is something to improve in the future but for now this adds a resonable amount of error checking
 
 	echo -e "${Blue}Locating list of blacklist's${NC}" 
 
