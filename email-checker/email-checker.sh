@@ -249,7 +249,7 @@ summary () {
 	printf "| %41s | %60s |\n"
 	printf "| %41s | %60s |\n" "Current spf record" "$spf"
 	printf "| %41s | %60s |\n" "Recommended SPF record" "v=spf1 a:$mxa ~all"
-	printf "| %41s | %60S |\n" "Or" "v=spf1 ip4:$ip ~all"
+	printf "| %41s | %60s |\n" "Or" "v=spf1 ip4:$ip ~all"
 	printf "| %41s | %60s |\n"
 	printf "+-----------------BL checks-----------------+--------------------------------------------------------------+\n"
 	printf "| %41s | %60s |\n"
