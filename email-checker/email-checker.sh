@@ -35,11 +35,11 @@ while IFS= read -r line; do
 
 	#echo $ToCheck							#uncomment to see record being queried
 
-	Output=$(host $ToCheck) 					#Runs host against the generated record
+	Output=$(dig $ToCheck +short) 					#Runs host against the generated record
 
 	Checked=$(($Checked +1)) 					#Add's 1 to the number of checked RBL's
 
-	if echo $Output| grep -q "$ToCheck not found" ; then 		#Checks for not found in the Output.
+	if  echo $Output| grep -q "$ToCheck not found" || [ -z $Output ] ; then 		#Checks for not found in the Output.
 	
 		echo -e ${Green}IP is not listed in $line${NC} 		#Output to terminal that the ip is not listed in the RBL
 		NotListed=$(($NotListed + 1)) 				#Adds 1 to the number of not listed
