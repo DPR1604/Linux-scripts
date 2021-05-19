@@ -3,11 +3,11 @@
 #Author: Gareth Jones
 #Github: https://github.com/DPR1604/Linux-scripts
 #License: MIT
-#version: 0.9.7
+#version: 0.9.10
 
 #Functions Start
 
-Blacklist-check() {
+Blacklist-check() {							#function checks for the IP against the list of blacklist
 
 #checks if ip is valid only really checks if the string matches is there are 4 section something like 1111.1111.1111.111 would still be valid this is something to improve in the future but for now this adds a resonable amount of error checking
 
@@ -33,7 +33,9 @@ Blacklist-check() {
 while IFS= read -r line; do
 	
 	ToCheck=$Rip.$line 						#Puts together the ip address and blacklist together to generate the dns Record to be checked
-	echo $ToCheck
+
+	#echo $ToCheck							#uncomment to see record being queried
+
 	Output=$(host $ToCheck) 					#Runs host against the generated record
 
 	Checked=$(($Checked +1)) 					#Add's 1 to the number of checked RBL's
@@ -62,7 +64,7 @@ echo -e "${White}Checked:${NC} $Checked ${Green}Not Listed:${NC} $NotListed ${Re
 
 }
 
-checkfordigcmd () {
+checkfordigcmd () {											#function for checing if dig is installed
 
         if ! command -v dig &> /dev/null ; then								#checks if dig is not installed
 
@@ -73,7 +75,7 @@ checkfordigcmd () {
 	
 }
 
-checkforhostcmd () {
+checkforhostcmd () {											#function for checking if host is installed
 
         if ! command -v host &> /dev/null ; then							#checks if host is not installed
 
@@ -85,7 +87,7 @@ checkforhostcmd () {
 
 }
 
-domaintomx () {
+domaintomx () {											#This function finds the mx for the given domain
 	
 	domainconfirm 										#calls the domain confirm function
 
@@ -111,9 +113,11 @@ domaintomx () {
 	echo "$mxa resolves to $ip" 								#Outputs the ip the mxa resolves to
 	sleep 1 
 
+	Rip=$(reverseip $ip)	
+
 }
 
-domainconfirm () {
+domainconfirm () {										#Function for checking if the domain is a valid domain,
 
 	#checks if the domain is a valid FQDN
 		
@@ -122,34 +126,38 @@ domainconfirm () {
 	host $domain 2>&1 > /dev/null								#runs a host command with outout to dev/null
 	if [ $? -eq 0 ]										#checks if if the output is 0
 	then
+		
 		echo -e "${Green}Valid domain continuing${NC}"					#outputs to terminal that domain is valid/registered
+
 	else
+
 		echo -e "${Red}Invalid domain name${NC}"					#outputs to terminal that domain is not valid
 		echo -e "${Blue}This usually means the domain is not registered or is spelled incorrectly, you can check if the domain is registered here:${NC} https://whois.com/whois/$domain" 
 
 		exit 1
+
 	fi
 
 }
 
-fcrdnscheck () {
+fcrdnscheck () {										#Checks if the FCrDNS is correct 
 
-	echo -e "${Blue}Checking if IP is valid${NC}"
+	echo -e "${Blue}Starting FCrDNS check${NC}"
+	PTR=$(dig ptr $Rip.in-addr.arpa +short)							#Grabs the PTR record for the IP
+	Output=$(dig a $PTR +short)								#Checks where the a record from the PTR points to
+	
+	if [ "$ip" == "$Output" ] && [ "$mxa" == "$PTR" ]; then					#Checks if the rDNS loop works 
 
-	if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-
-        	echo -e "${Green}IP is valid continuing${NC}"
+		echo "Passed"
+		fcrdns="Passed"
 
 	else
 
-        	echo -e "${Red}IP is not valid${NC}"
-        	exit 1
+		echo "Failed"
+		fcrdns="Failed"
 
 	fi
-	
-	
 
-	dig ptr 76.100.90.157.in-addr.arpa
 
 }
 
@@ -178,21 +186,28 @@ Portcheck () {
 
 }
 
+IPvalidation () {
+
+	#checks if ip is valid only really checks if the string matches is there are 4 section something like 1111.1111.1111.111 would still be valid this is something to improve in the future but for now this adds a resonable 
+	#amount of error checking
+
+	echo -e "${Blue}Checking if IP is valid${NC}"				
+
+	if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+
+        	echo -e "${Green}IP is valid continuing${NC}"
+
+	else
+
+        	echo -e "${Red}IP is not valid${NC}"
+	      	exit 1
+
+	fi
+
+}
+
 reverseip () {
 
-	#echo -e "${Blue}Checking if IP is valid${NC}"
-
-	#if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-
-        #	echo -e "${Green}IP is valid continuing${NC}"
-
-	#else
-
-        #	echo -e "${Red}IP is not valid${NC}"
-	 #       exit 1
-
-	#fi
-	
 	#Reverses the ip so it can looked up correctly
     	local IFS
     	IFS=.
@@ -226,32 +241,39 @@ spfcheck () {
 summary () {
 
 	printf "+--------------------DNS--------------------+--------------------------------------------------------------+\n"
-	printf "| %40s | %60s |\n"
-	printf "| %40s | %60s |\n" "Domains current MX record points to" $mxa 
-       	printf "| %40s | %60s |\n" "$mxa resolves to IP" $ip 
-	printf "| %40s | %60s |\n"
+	printf "| %41s | %60s |\n"
+	printf "| %41s | %60s |\n" "Domains current MX record points to" $mxa 
+       	printf "| %41s | %60s |\n" "$mxa resolves to IP" $ip 
+	printf "| %41s | %60s |\n"
 	printf "+--------------------SPF--------------------+--------------------------------------------------------------+\n"
-	printf "| %40s | %60s |\n"
-	printf "| %40s | %60s |\n" "Current spf record" "$spf"
-	printf "| %40s | %60s |\n" "Recommended SPF record" "v=spf1 a:$mxa ip4:$ip ~all"
-	printf "| %40s | %60s |\n"
+	printf "| %41s | %60s |\n"
+	printf "| %41s | %60s |\n" "Current spf record" "$spf"
+	printf "| %41s | %60s |\n" "Recommended SPF record" "v=spf1 a:$mxa ~all"
+	printf "| %41s | %60S |\n" "Or" "v=spf1 ip4:$ip ~all"
+	printf "| %41s | %60s |\n"
 	printf "+-----------------BL checks-----------------+--------------------------------------------------------------+\n"
-	printf "| %40s | %60s |\n"
-	printf "| ${White}%40s${NC} | ${White}%60d${NC} |\n" "Checked" $Checked
-	printf "| ${Green}%40s${NC} | ${Green}%60d${NC} |\n" "Not listed" $NotListed
-	printf "| ${Red}%40s${NC} | ${Red}%60d${NC} |\n" "Listed" $Listed
-	printf "| ${Blue}%40s${NC} | ${Blue}%60d${NC} |\n" "Unknown" $Unknown
-	printf "| %40s | %60s |\n"
+	printf "| %41s | %60s |\n"
+	printf "| ${White}%41s${NC} | ${White}%60d${NC} |\n" "Checked" $Checked
+	printf "| ${Green}%41s${NC} | ${Green}%60d${NC} |\n" "Not listed" $NotListed
+	printf "| ${Red}%41s${NC} | ${Red}%60d${NC} |\n" "Listed" $Listed
+	printf "| ${Blue}%41s${NC} | ${Blue}%60d${NC} |\n" "Unknown" $Unknown
+	printf "| %41s | %60s |\n"
 	printf "+-------------------Ports-------------------+--------------------------------------------------------------+\n"
-	printf "| %40s | %60s |\n"
-	printf "| %40s | %60s |\n" "SMTP (25)"  $stat25
-       	printf "| %40s | %60s |\n" "SMTPS (587)" $stat587
-	printf "| %40s | %60s |\n" "IMAP (143)" $stat143
-	printf "| %40s | %60s |\n" "IMAPS (993)" $stat993
-	printf "| %40s | %60s |\n" "POP3 (110)" $stat110
-	printf "| %40s | %60s |\n" "POP3S (995)" $stat995
-	printf "| %40s | %60s |\n"
+	printf "| %41s | %60s |\n"
+	printf "| %41s | %60s |\n" "SMTP (25)"  $stat25
+       	printf "| %41s | %60s |\n" "SMTPS (587)" $stat587
+	printf "| %41s | %60s |\n" "IMAP (143)" $stat143
+	printf "| %41s | %60s |\n" "IMAPS (993)" $stat993
+	printf "| %41s | %60s |\n" "POP3 (110)" $stat110
+	printf "| %41s | %60s |\n" "POP3S (995)" $stat995
+	printf "| %41s | %60s |\n"
 	printf "+------------------FCrDNS-------------------+--------------------------------------------------------------+\n"
+	printf "| %41s | %60s |\n"
+	printf "| %41s | %60s |\n" "Mail server IP" $ip
+	printf "| %41s | %60s |\n" "PTR record" $PTR
+	printf "| %41s | %60s |\n" "Mail A record" $mxa
+	printf "| %41s | %60s |\n" "Pass/fail" $fcrdns
+	printf "| %41s | %60s |\n"
 	printf "+-------------------------------------------+--------------------------------------------------------------+\n" 
 
 }
@@ -265,9 +287,11 @@ cat << EOF
 	
 	email-checker.sh -d example.com -b
 	email-checker.sh -i 1.1.1.1 -b
-
+	
+	-a Does all availiable checks
 	-b Starts a blacklist check
 	-d Declares a domain to be checked
+	-f Starts a FCrDNS check
 	-h Displays this message
 	-i Declares a IP to be checked
 	-s Start an spf check
@@ -298,6 +322,7 @@ do
 		a )	Blacklist-check
 			spfcheck
 			Portcheck
+			fcrdnscheck
 			summary
 			;;
 
@@ -315,6 +340,7 @@ do
                         ;;
 		
 		i ) 	ip=$OPTARG
+			IPvalidation
 			Rip=$(reverseip $ip)
 			;;
 
