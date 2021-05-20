@@ -3,7 +3,7 @@
 #Author: Gareth Jones
 #Github: https://github.com/DPR1604/Linux-scripts
 #License: MIT
-#version: 0.9.10
+#version: 0.9.11
 
 #Functions Start
 
