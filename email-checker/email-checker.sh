@@ -3,7 +3,7 @@
 #Author: Gareth Jones
 #Github: https://github.com/DPR1604/Linux-scripts
 #License: MIT
-#version: 0.9.10
+#version: 0.9.11
 
 #Functions Start
 
@@ -14,12 +14,12 @@ Blacklist-check() {							#function checks for the IP against the list of blackl
 
 	#Checks to see if the list of BL providors and if it doesn't exsist it will retreive it from github
 
-	if [ ! -f ./BLlist.txt ]; then 
+	if [ ! -f /tmp/BLlist.txt ]; then 
 	
 		echo -e "${Blue}List Not Found Downloading list${NC}"
-		wget -q $BLlistlink 
+		wget -q -O /tmp/BLlist.txt $BLlistlink 
 
-		if [ ! -f ./BLlist.txt ]; then
+		if [ ! -f /tmp/BLlist.txt ]; then
 
 			echo -e "${Red}download failed please ensure wget is installed and access to${NC} $BLlistDL"
 			exit 1
