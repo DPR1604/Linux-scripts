@@ -239,41 +239,41 @@ spfcheck () {
 
 summary () {
 
-	printf "+--------------------DNS--------------------+--------------------------------------------------------------+\n"
-	printf "| %41s | %60s |\n"
-	printf "| %41s | %60s |\n" "Domains current MX record points to" $mxa 
-       	printf "| %41s | %60s |\n" "$mxa resolves to IP" $ip 
-	printf "| %41s | %60s |\n"
-	printf "+--------------------SPF--------------------+--------------------------------------------------------------+\n"
-	printf "| %41s | %60s |\n"
-	printf "| %41s | %60s |\n" "Current spf record" "$spf"
-	printf "| %41s | %60s |\n" "Recommended SPF record" "v=spf1 a:$mxa ~all"
-	printf "| %41s | %60s |\n" "Or" "v=spf1 ip4:$ip ~all"
-	printf "| %41s | %60s |\n"
-	printf "+-----------------BL checks-----------------+--------------------------------------------------------------+\n"
-	printf "| %41s | %60s |\n"
-	printf "| ${White}%41s${NC} | ${White}%60d${NC} |\n" "Checked" $Checked
-	printf "| ${Green}%41s${NC} | ${Green}%60d${NC} |\n" "Not listed" $NotListed
-	printf "| ${Red}%41s${NC} | ${Red}%60d${NC} |\n" "Listed" $Listed
-	printf "| ${Blue}%41s${NC} | ${Blue}%60d${NC} |\n" "Unknown" $Unknown
-	printf "| %41s | %60s |\n"
-	printf "+-------------------Ports-------------------+--------------------------------------------------------------+\n"
-	printf "| %41s | %60s |\n"
-	printf "| %41s | %60s |\n" "SMTP (25)"  $stat25
-       	printf "| %41s | %60s |\n" "SMTPS (587)" $stat587
-	printf "| %41s | %60s |\n" "IMAP (143)" $stat143
-	printf "| %41s | %60s |\n" "IMAPS (993)" $stat993
-	printf "| %41s | %60s |\n" "POP3 (110)" $stat110
-	printf "| %41s | %60s |\n" "POP3S (995)" $stat995
-	printf "| %41s | %60s |\n"
-	printf "+------------------FCrDNS-------------------+--------------------------------------------------------------+\n"
-	printf "| %41s | %60s |\n"
-	printf "| %41s | %60s |\n" "Mail server IP" $ip
-	printf "| %41s | %60s |\n" "PTR record" $PTR
-	printf "| %41s | %60s |\n" "Mail A record" $mxa
-	printf "| %41s | %60s |\n" "Pass/fail" $fcrdns
-	printf "| %41s | %60s |\n"
-	printf "+-------------------------------------------+--------------------------------------------------------------+\n" 
+	printf "+--------------------DNS--------------------+------------------------------------------+\n"
+	printf "| %41s | %40s |\n"
+	printf "| %41s | %40s |\n" "Domains current MX record points to" $mxa 
+       	printf "| %41s | %40s |\n" "$mxa resolves to IP" $ip 
+	printf "| %41s | %40s |\n"
+	printf "+--------------------SPF--------------------+------------------------------------------+\n"
+	printf "| %41s | %40s |\n"
+	printf "| %41s | %40s |\n" "Current spf record" "$spf"
+	printf "| %41s | %40s |\n" "Recommended SPF record" "v=spf1 a:$mxa ~all"
+	printf "| %41s | %40s |\n" "Or" "v=spf1 ip4:$ip ~all"
+	printf "| %41s | %40s |\n"
+	printf "+-----------------BL checks-----------------+------------------------------------------+\n"
+	printf "| %41s | %40s |\n"
+	printf "| ${White}%41s${NC} | ${White}%40d${NC} |\n" "Checked" $Checked
+	printf "| ${Green}%41s${NC} | ${Green}%40d${NC} |\n" "Not listed" $NotListed
+	printf "| ${Red}%41s${NC} | ${Red}%40d${NC} |\n" "Listed" $Listed
+	printf "| ${Blue}%41s${NC} | ${Blue}%40d${NC} |\n" "Unknown" $Unknown
+	printf "| %41s | %40s |\n"
+	printf "+-------------------Ports-------------------+------------------------------------------+\n"
+	printf "| %41s | %40s |\n"
+	printf "| %41s | %40s |\n" "SMTP (25)"  $stat25
+       	printf "| %41s | %40s |\n" "SMTPS (587)" $stat587
+	printf "| %41s | %40s |\n" "IMAP (143)" $stat143
+	printf "| %41s | %40s |\n" "IMAPS (993)" $stat993
+	printf "| %41s | %40s |\n" "POP3 (110)" $stat110
+	printf "| %41s | %40s |\n" "POP3S (995)" $stat995
+	printf "| %41s | %40s |\n"
+	printf "+------------------FCrDNS-------------------+------------------------------------------+\n"
+	printf "| %41s | %40s |\n"
+	printf "| %41s | %40s |\n" "Mail server IP" $ip
+	printf "| %41s | %40s |\n" "PTR record" $PTR
+	printf "| %41s | %40s |\n" "Mail A record" $mxa
+	printf "| %41s | %40s |\n" "Pass/fail" $fcrdns
+	printf "| %41s | %40s |\n"
+	printf "+-------------------------------------------+------------------------------------------+\n" 
 
 }
 

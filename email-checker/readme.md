@@ -39,3 +39,16 @@ This can be done with the `-a` flag;
 ```bash
 email-checker.sh -d example.com -a
 ```
+
+### Blacklist check
+
+Blacklist checks can be called with the '-b' flag 
+
+```bash
+email-checker.sh -d example.com -b
+```
+or
+```bash
+email-checker.sh -i 1.1.1.1 -b
+```
+
