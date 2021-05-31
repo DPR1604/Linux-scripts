@@ -26,7 +26,7 @@ Declaring an IP is done with the `-i` flag;
 email-checker.sh -i 1.1.1.1
 ```
 
-Declaring a Domain name is doen with the `-d' flag;
+Declaring a Domain name is doen with the `-d` flag;
 
 ```bash
 email-checker.sh -d example.com
@@ -42,7 +42,7 @@ email-checker.sh -d example.com -a
 
 ### Blacklist check
 
-Blacklist checks can be called with the '-b' flag 
+Blacklist checks can be called with the `-b` flag 
 
 ```bash
 email-checker.sh -d example.com -b
@@ -52,3 +52,27 @@ or
 email-checker.sh -i 1.1.1.1 -b
 ```
 
+### SPF check
+
+SPF check can be called with '-s'
+```bash
+email-checker.sh -d example.com -s
+```
+### FCrDNS check 
+
+FCrDNS checks can be called with `-f`
+
+```bash
+email-checker.sh -d example.com -f
+```
+
+### Port check
+
+Port checks can be called with `-p`
+```bash
+email-checker.sh -d example.com -p
+```
+or
+```bash
+email-checker.sh -i 1.1.1.1 -p 
+```
