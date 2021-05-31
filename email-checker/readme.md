@@ -1,6 +1,6 @@
 # Email-checker.sh
 
-Email-checker.sh is a script for troubleshooting common email problems for self hosted email servers, currently the script can check the following,
+Email-checker.sh is a script for troubleshooting common email problems for self-hosted email servers, currently the script can check the following,
 
 - The mail servers IP against server blacklists
 - The domain has a valid SPF record
@@ -26,7 +26,7 @@ Declaring an IP is done with the `-i` flag;
 email-checker.sh -i 1.1.1.1
 ```
 
-Declaring a Domain name is doen with the `-d` flag;
+Declaring a Domain name is done with the `-d` flag;
 
 ```bash
 email-checker.sh -d example.com
