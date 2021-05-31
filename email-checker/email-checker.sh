@@ -3,7 +3,7 @@
 #Author: Gareth Jones
 #Github: https://github.com/DPR1604/Linux-scripts
 #License: MIT
-#version: 0.9.11
+#version: 0.9.12
 
 #Functions Start
 
@@ -145,14 +145,18 @@ fcrdnscheck () {										#Checks if the FCrDNS is correct
 	PTR=$(dig ptr $Rip.in-addr.arpa +short)							#Grabs the PTR record for the IP
 	Output=$(dig a $PTR +short)								#Checks where the a record from the PTR points to
 	
+	echo -e "Mail server IP is $ip"
+	echo -e "PTR: $PTR"
+        echo -e "$PTR resolves to $Output"	
+
 	if [ "$ip" == "$Output" ] && [ "$mxa" == "$PTR" ]; then					#Checks if the rDNS loop works 
 
-		echo "Passed"
+		echo -e "${Green}Passed${NC}"
 		fcrdns="Passed"
 
 	else
 
-		echo "Failed"
+		echo "${Red}Failed${NC}"
 		fcrdns="Failed"
 
 	fi
@@ -293,6 +297,7 @@ cat << EOF
 	-f Starts a FCrDNS check
 	-h Displays this message
 	-i Declares a IP to be checked
+	-p Starts a port check
 	-s Start an spf check
 EOF
 
