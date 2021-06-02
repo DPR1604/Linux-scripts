@@ -31,27 +31,26 @@ Blacklist-check() {							#function checks for the IP against the list of blackl
 # Checks against the blacklists for the ip
 while IFS= read -r line; do
 	
-	ToCheck=$Rip.$line 						#Puts together the ip address and blacklist together to generate the dns Record to be checked
+	ToCheck=$Rip.$line 								#Puts together the ip address and blacklist together to generate the dns Record to be checked
 
-	#echo $ToCheck							#uncomment to see record being queried
+	#echo $ToCheck									#uncomment to see record being queried
 
-	Output=$(dig $ToCheck +short) 					#Runs host against the generated record
+	Output=$(host $ToCheck) 							#Runs host against the generated record
+	Checked=$(($Checked +1)) 							#Add's 1 to the number of checked RBL's
 
-	Checked=$(($Checked +1)) 					#Add's 1 to the number of checked RBL's
-
-	if  echo $Output| grep -q "$ToCheck not found" || [ -z $Output ] ; then 		#Checks for not found in the Output.
+	if  echo $Output| grep -q "$ToCheck not found" || [ -z "$Output" ]; then	#Checks for not found in the Output.
 	
-		echo -e ${Green}IP is not listed in $line${NC} 		#Output to terminal that the ip is not listed in the RBL
-		NotListed=$(($NotListed + 1)) 				#Adds 1 to the number of not listed
+		echo -e ${Green}IP is not listed in $line${NC} 				#Output to terminal that the ip is not listed in the RBL
+		NotListed=$(($NotListed + 1)) 						#Adds 1 to the number of not listed
 
-	elif echo $Output | grep -q "$ToCheck has address" ; then 	#Checks for "has address"
+	elif echo $Output | grep -q "$ToCheck has address" ; then 			#Checks for "has address"
 
-		echo -e ${Red}IP is listed in $line${NC} 		#Outputs to terminal that the ip is listed.
-		Listed=$(($Listed + 1)) 				#Adds 1 to the number of listed
+		echo -e ${Red}IP is listed in $line${NC} 				#Outputs to terminal that the ip is listed.
+		Listed=$(($Listed + 1)) 						#Adds 1 to the number of listed
 
-	else								#if other two statements dont match then 
-
-		echo -e ${Blue}Unknown result for $line${NC} 		#outputs to terminal that the result is unknown
+	else										#if other two statements dont match then 
+		
+		echo -e ${Blue}Unknown result for $line${NC} 				#outputs to terminal that the result is unknown
 		Unknown=$(($Unknown + 1))
 
 	fi
@@ -306,7 +305,7 @@ EOF
 
 #Variables Start
 ip="" 													#clears the ip variable
-BLlist="./BLlist.txt" 											#declares the list of blacklists
+BLlist="/tmp/BLlist.txt" 											#declares the list of blacklists
 Checked=0 												#resets variable counter to 0
 Listed=0 												#resets variable counter to 0
 NotListed=0 												#resets variable counter to 0
