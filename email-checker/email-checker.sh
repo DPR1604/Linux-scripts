@@ -33,9 +33,11 @@ while IFS= read -r line; do
 	
 	ToCheck=$Rip.$line 								#Puts together the ip address and blacklist together to generate the dns Record to be checked
 
-	#echo $ToCheck									#uncomment to see record being queried
+#	echo $ToCheck									#uncomment to see record being queried
 
 	Output=$(host $ToCheck) 							#Runs host against the generated record
+
+#	echo $Output
 	Checked=$(($Checked +1)) 							#Add's 1 to the number of checked RBL's
 
 	if  echo $Output| grep -q "$ToCheck not found" || [ -z "$Output" ]; then	#Checks for not found in the Output.
@@ -89,29 +91,48 @@ domaintomx () {											#This function finds the mx for the given domain
 	
 	domainconfirm 										#calls the domain confirm function
 
-	mxa=$(host $domain |grep mail | awk '{ print $7 }' ) 					#grabs the A name record used for MX
-
+	mxa=$(host $domain |grep -w mail | awk '{ print $7 }' ) 				#grabs the A name record used for MX
+	
 	if [ "$mxa" == "" ]; then								#Checks if the A record from the MX record is blank
 
 		echo -e "${Red}Domain does not have an MX record${NC}"				#Outputs to the terminal that the domain has an empty mx record
 		exit 1
 	fi
 
-	echo "$domain uses $mxa for handling mail" 						#Outputs to terminal the mx record the domain uses for mail
+	echo "$domain uses "$mxa" for handling mail" 						#Outputs to terminal the mx record the domain uses for mail
 	sleep 1
+	
+	if (( $(grep -c . <<<"$mxa") > 1 )); then
+		while IFS= read -r line; do
 
-	ip=$(host $mxa | awk '{ print $4 }' ) 							#Grabs the ip address the from the mx a record
+			ip=$(host $line | grep -v IPv6 | awk '{print $4}') 					#Grabs the ip address the from the mx a record
 
-	if [ "$ip" == "" ]; then								#Checks if the mxa has an IP
+			if [ "$ip" == "" ]; then								#Checks if the mxa has an IP
 
-		echo -e "The A record used for the MX record does not resolve to an IP"		#Outputs to terminal that the ip is blank
-		exit 1
+				echo -e "The A record used for the MX record does not resolve to an IP"		#Outputs to terminal that the ip is blank
+				exit 1
+			fi
+
+			echo "$line resolves to $ip" 								#Outputs the ip the mxa resolves to
+			sleep 1 
+
+			Rip=$(reverseip $ip)
+		done < <(printf %s "$mxa")
+	else
+		ip=$(host $mxa | grep -v IPv6 | awk '{print $4}')                                      #Grabs the ip address the from the mx a record
+
+                if [ "$ip" == "" ]; then                                                                #Checks if the mxa has an IP
+
+                        echo -e "The A record used for the MX record does not resolve to an IP"         #Outputs to terminal that the ip is blank
+                                exit 1
+                fi
+
+                echo "$mxa resolves to $ip"                                                            #Outputs the ip the mxa resolves to
+                sleep 1
+
+                Rip=$(reverseip $ip)
 	fi
 
-	echo "$mxa resolves to $ip" 								#Outputs the ip the mxa resolves to
-	sleep 1 
-
-	Rip=$(reverseip $ip)	
 
 }
 
