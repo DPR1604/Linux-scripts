@@ -176,7 +176,7 @@ fcrdnscheck () {										#Checks if the FCrDNS is correct
 
 	else
 
-		echo "${Red}Failed${NC}"
+		echo -e "${Red}Failed${NC}"
 		fcrdns="Failed"
 
 	fi
