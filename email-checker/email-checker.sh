@@ -189,7 +189,7 @@ Portcheck () {
 	for i in 25 587 143 993 110 995 
 	do
 
-		nc -vz -w10 mail.valhallaonline.info $i |& grep -q Connected
+		nc -vz -w10 $ip $i &>/dev/null 
 		if [ $? -eq 0 ]; then
 
 			echo -e "${Green}$i is open ${NC}"
